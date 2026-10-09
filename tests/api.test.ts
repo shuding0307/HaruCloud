@@ -4,13 +4,15 @@ import { GET as getThought } from "@/app/api/thoughts/[id]/route";
 import { POST as postReaction } from "@/app/api/thoughts/[id]/reactions/route";
 import { POST as postReport } from "@/app/api/thoughts/[id]/reports/route";
 import { setDataServicesForTesting } from "@/lib/repositories";
-import { MockThoughtRepository } from "@/lib/repositories/mock";
+import { MockFeedbackRepository, MockThoughtRepository } from "@/lib/repositories/mock";
+import { POST as postFeedback } from "@/app/api/feedback/route";
 import { MemoryRateLimiter } from "@/lib/security/rate-limit";
 
 const BASE = "http://localhost:3000";
 const HOUR = 60 * 60 * 1000;
 let now = Date.parse("2026-10-09T00:00:00Z");
 let ipCounter = 0;
+let feedbackRepo: MockFeedbackRepository;
 
 function req(path: string, init: { method?: string; body?: unknown; cookie?: string; ip?: string; origin?: string } = {}) {
   const headers: Record<string, string> = { host: "localhost:3000", "x-forwarded-for": init.ip ?? "203.0.113.1" };
@@ -33,8 +35,10 @@ async function post(content: string, opts: { cookie?: string; ip?: string } = {}
 beforeEach(() => {
   now = Date.parse("2026-10-09T00:00:00Z");
   ipCounter++;
+  feedbackRepo = new MockFeedbackRepository();
   setDataServicesForTesting({
     thoughts: new MockThoughtRepository(() => now),
+    feedback: feedbackRepo,
     rateLimiter: new MemoryRateLimiter(),
   });
 });
@@ -194,5 +198,40 @@ describe("POST /api/thoughts/[id]/reports", () => {
     const { thought } = await (await post("x")).json();
     const res = await postReport(req(`/api/thoughts/${thought.id}/reports`, { method: "POST", body: {} }), ctx(thought.id));
     expect(res.status).toBe(422);
+  });
+});
+
+describe("POST /api/feedback", () => {
+  const send = (body: unknown, opts: { ip?: string; origin?: string; cookie?: string } = {}) =>
+    postFeedback(req("/api/feedback", { method: "POST", body, ...opts }));
+
+  it("의견을 익명으로 접수하고, 정리된 본문을 저장한다", async () => {
+    const res = await send({ category: "suggestion", message: "  다크 모드도 있으면 좋겠어요  " });
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({ status: "received" });
+    expect(feedbackRepo.items).toHaveLength(1);
+    expect(feedbackRepo.items[0]).toMatchObject({ category: "suggestion", message: "다크 모드도 있으면 좋겠어요" });
+    expect(feedbackRepo.items[0]!.senderHash).toBeTruthy();
+  });
+
+  it("빈 내용·1000자 초과·알 수 없는 종류는 422", async () => {
+    for (const body of [
+      { category: "question", message: "   " },
+      { category: "question", message: "가".repeat(1001) },
+      { category: "praise", message: "좋아요" },
+    ]) {
+      expect((await send(body)).status).toBe(422);
+    }
+    expect(feedbackRepo.items).toHaveLength(0);
+  });
+
+  it("다른 출처의 요청은 403, 짧은 시간에 너무 많이 보내면 429", async () => {
+    expect((await send({ category: "bug", message: "x" }, { origin: "https://evil.example" })).status).toBe(403);
+    const ip = `192.0.2.${ipCounter}`;
+    const first = await send({ category: "bug", message: "1" }, { ip });
+    const cookie = cookieOf(first)!;
+    const statuses = [];
+    for (let i = 0; i < 6; i++) statuses.push((await send({ category: "bug", message: `${i}` }, { ip, cookie })).status);
+    expect(statuses).toContain(429);
   });
 });

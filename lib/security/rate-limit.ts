@@ -47,4 +47,6 @@ export const RATE_LIMITS = {
   reactionIp: { name: "reaction:ip", limit: 80, windowSeconds: 600 },
   reportActor: { name: "report:actor", limit: 10, windowSeconds: 3600 },
   reportIp: { name: "report:ip", limit: 20, windowSeconds: 3600 },
+  feedbackActor: { name: "feedback:actor", limit: 5, windowSeconds: 3600 },
+  feedbackIp: { name: "feedback:ip", limit: 10, windowSeconds: 3600 },
 } satisfies Record<string, RateLimitRule>;

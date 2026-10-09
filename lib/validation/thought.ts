@@ -4,6 +4,7 @@ import {
   REPORT_REASONS,
   THOUGHT_MAX_LENGTH,
 } from "@/types/thought";
+import { FEEDBACK_CATEGORIES, FEEDBACK_MAX_LENGTH } from "@/types/feedback";
 
 // 제어문자(줄바꿈·탭 제외)와 보이지 않는 문자 제거
 const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
@@ -49,4 +50,16 @@ export const createReportSchema = z.object({
 export const listThoughtsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(30),
   cursor: z.string().max(200).optional(),
+});
+
+export const createFeedbackSchema = z.object({
+  category: z.enum(FEEDBACK_CATEGORIES, { error: "의견 종류를 골라주세요." }),
+  message: z
+    .string({ error: "내용을 입력해주세요." })
+    .max(FEEDBACK_MAX_LENGTH * 4, { error: "글이 너무 길어요." })
+    .transform(normalizeThoughtContent)
+    .refine((v) => countChars(v) >= 1, { error: "내용을 입력해주세요." })
+    .refine((v) => countChars(v) <= FEEDBACK_MAX_LENGTH, {
+      error: `최대 ${FEEDBACK_MAX_LENGTH}자까지 쓸 수 있어요.`,
+    }),
 });

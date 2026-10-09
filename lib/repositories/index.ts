@@ -2,8 +2,8 @@ import "server-only";
 import { getDataMode } from "@/lib/env";
 import { MemoryRateLimiter } from "@/lib/security/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import { MockThoughtRepository } from "./mock";
-import { SupabaseRateLimiter, SupabaseThoughtRepository } from "./supabase";
+import { MockFeedbackRepository, MockThoughtRepository } from "./mock";
+import { SupabaseFeedbackRepository, SupabaseRateLimiter, SupabaseThoughtRepository } from "./supabase";
 import type { DataServices } from "./types";
 
 const PINNED = "pinned-for-testing";
@@ -18,10 +18,15 @@ export function getDataServices(): DataServices {
   let services: DataServices;
   if (mode === "supabase") {
     const db = getSupabaseAdmin();
-    services = { thoughts: new SupabaseThoughtRepository(db), rateLimiter: new SupabaseRateLimiter(db) };
+    services = {
+      thoughts: new SupabaseThoughtRepository(db),
+      feedback: new SupabaseFeedbackRepository(db),
+      rateLimiter: new SupabaseRateLimiter(db),
+    };
   } else {
     services = {
       thoughts: new MockThoughtRepository(undefined, { seed: process.env.NODE_ENV !== "test" }),
+      feedback: new MockFeedbackRepository(),
       rateLimiter: new MemoryRateLimiter(),
     };
   }

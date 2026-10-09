@@ -56,3 +56,12 @@ export interface CreateReportRequest {
 export interface CreateReportResponse {
   status: "received" | "already_reported";
 }
+
+export interface CreateFeedbackRequest {
+  category: string;
+  message: string;
+}
+
+export interface CreateFeedbackResponse {
+  status: "received";
+}

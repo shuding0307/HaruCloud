@@ -11,7 +11,8 @@ import type {
   ThoughtLookup,
   ThoughtStatus,
 } from "@/types/thought";
-import type { ListActiveResult, ListCursor, ThoughtRepository } from "./types";
+import type { FeedbackCategory } from "@/types/feedback";
+import type { FeedbackRepository, ListActiveResult, ListCursor, ThoughtRepository } from "./types";
 import { REPORT_HIDE_THRESHOLD, REPORTED_RETENTION_MS, THOUGHT_LIFETIME_MS } from "./policy";
 
 interface MockThought {
@@ -209,5 +210,14 @@ export class MockThoughtRepository implements ThoughtRepository {
   /** 테스트용: 신고 레코드 수 */
   reportCount(thoughtId: string) {
     return this.reports.filter((r) => r.thoughtId === thoughtId).length;
+  }
+}
+
+/** 개발용 메모리 의견함 (서버 재시작 시 사라짐) */
+export class MockFeedbackRepository implements FeedbackRepository {
+  readonly items: { category: FeedbackCategory; message: string; senderHash: string; createdAt: number }[] = [];
+
+  async create(input: { category: FeedbackCategory; message: string; senderHash: string }) {
+    this.items.push({ ...input, createdAt: Date.now() });
   }
 }
