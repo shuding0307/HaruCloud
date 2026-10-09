@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   HaruCloud 디자인 토큰
+   ───────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* 색상 */
+  --color-sky: #ddeffd;
+  --color-cloud: #ffffff;
+  --color-lavender: #e9e2f7;
+  --color-peach: #fbe6d9;
+  --color-cloud-blue: #a7c9e4;
+  --color-deep-sky: #345b7a;
+  --color-ink: #24425b; /* 본문: Sky 배경 대비 9:1 이상 */
+  --color-ink-soft: #4d6a82; /* 보조 문구: 흰색/Sky 대비 4.5:1 이상 */
+  --color-danger: #a8445a;
+  --color-glow: #fff6d8;
+
+  /* 간격 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* 모서리 */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* 그림자: 연하고 넓게 */
+  --shadow-soft: 0 8px 30px -12px rgb(52 91 122 / 0.18);
+  --shadow-float: 0 18px 40px -20px rgb(52 91 122 / 0.28);
+
+  /* 애니메이션 */
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-slow: 600ms;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --font-sans-stack: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-sky: var(--color-sky);
+  --color-cloud: var(--color-cloud);
+  --color-lavender: var(--color-lavender);
+  --color-peach: var(--color-peach);
+  --color-cloud-blue: var(--color-cloud-blue);
+  --color-deep-sky: var(--color-deep-sky);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-danger: var(--color-danger);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-float: var(--shadow-float);
+  --font-sans: var(--font-sans-stack);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background: var(--color-sky);
+}
+
+body {
+  background: var(--color-sky);
+  color: var(--color-ink);
+  font-family: var(--font-sans-stack);
+  font-size: 16px;
+  line-height: 1.65;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-deep-sky);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--color-lavender);
+}
+
+/* 배경의 먼 구름 — 아주 느린 수평 이동 */
+@keyframes drift {
+  from { transform: translateX(-6vw); }
+  to { transform: translateX(6vw); }
+}
+.bg-drift {
+  animation: drift var(--drift-duration, 80s) ease-in-out infinite alternate;
+}
+
+@keyframes sun-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.sun-breathe {
+  animation: sun-breathe 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
