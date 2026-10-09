@@ -5,7 +5,7 @@ export function CloudPreview({ content }: { content: string }) {
   const preview = content.trim().replace(/\s+/g, " ");
   return (
     <div className="space-y-4">
-      <div className="rounded-[var(--radius-md)] bg-sky px-6 py-6">
+      <div className="rounded-[var(--radius-md)] bg-gradient-to-b from-[#cfe2f6] via-sky to-lavender px-6 py-6">
         <div className="mx-auto w-48">
           <CloudShape variant={0} textClassName="text-[13px] leading-[1.45]">
             <span className="line-clamp-3">{preview || "…"}</span>

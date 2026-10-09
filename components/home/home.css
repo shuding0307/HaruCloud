@@ -1,0 +1,537 @@
+/* HaruCloud — 낮엔 구름, 밤엔 별 (몽환 3D 버전)
+   harucloud-sky/styles.css 의 값을 그대로 옮겼다. 클래스는 hc- 접두사로 충돌을 피한다. 낮/밤은 <html data-sky> 로 전환한다.
+   data-sky 가 없으면(스크립트 차단 등) 낮으로 보인다. */
+
+.hc-sky {
+  --font-body: var(--font-gowun-dodum), 'Gowun Dodum', sans-serif;
+  --font-display: var(--font-gowun-batang), 'Gowun Batang', serif;
+
+  /* 낮 */
+  --day-sky: linear-gradient(180deg, #B4C6F4 0%, #D8CDF4 38%, #F4D6E6 72%, #FCEEE6 100%);
+  --day-ink: #26244D;
+  --day-ink-soft: #4B4880;
+  --day-cloud-text: #3A3566;
+  --day-accent: linear-gradient(135deg, #5A4FBF 0%, #7A5BC4 100%);
+
+  /* 밤 */
+  --night-sky: linear-gradient(180deg, #070B24 0%, #121A44 48%, #251F55 82%, #3A2A62 100%);
+  --night-ink: #F6F4FF;
+  --night-ink-soft: #AEB8E2;
+  --night-label: #E6EAFF;
+  --night-accent: linear-gradient(135deg, #FBEBB8 0%, #E9C06C 100%);
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  /* hidden 은 포커스 이동 등으로 스크롤될 수 있어, 화면 밖 장식 쪽으로 밀리지 않게 clip 으로 고정 */
+  overflow: clip;
+  transition: background 1.2s ease;
+  font-family: var(--font-body);
+  line-height: normal;
+  word-break: keep-all;
+}
+.hc-sky *, .hc-sky *::before, .hc-sky *::after { box-sizing: border-box; }
+html:not([data-sky="night"]) .hc-sky { background: var(--day-sky); color: var(--day-ink); }
+html[data-sky="night"] .hc-sky { background: var(--night-sky); color: var(--night-ink); }
+/* 고민이 많아 길게 스크롤해도 하늘(그라디언트·해·달·별)이 화면에 머물도록 뷰포트에 고정한다 */
+.hc-sky::before { content: ''; position: fixed; inset: 0; transition: background 1.2s ease; }
+html:not([data-sky="night"]) .hc-sky::before { background: var(--day-sky); }
+html[data-sky="night"] .hc-sky::before { background: var(--night-sky); }
+
+/* 배경 레이어 전환 */
+.hc-layer { position: fixed; inset: 0; pointer-events: none; transition: opacity 1.2s ease; }
+html:not([data-sky="night"]) .hc-layer-night,
+html[data-sky="night"] .hc-layer-day { opacity: 0; }
+
+/* 낮/밤 문구: 둘 다 렌더하고 현재 하늘의 것만 보인다 (숨긴 쪽은 보조기기에서도 제외) */
+html:not([data-sky="night"]) .hc-only-night,
+html[data-sky="night"] .hc-only-day { display: none; }
+
+/* ---------- 낮 배경 ---------- */
+.hc-sun-bloom {
+  position: absolute; top: -160px; right: -160px; width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,246,222,.95) 0%, rgba(255,236,214,.55) 28%, rgba(255,226,236,0) 70%);
+}
+.hc-sun {
+  position: absolute; top: 22px; right: 22px; width: 54px; height: 54px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, #FFFFFF 0%, #FFF6DC 55%, #FFE3B8 100%);
+  box-shadow: 0 0 30px 12px rgba(255,240,205,.8), 0 0 90px 40px rgba(255,220,230,.45);
+}
+.hc-far { position: absolute; width: var(--w); height: calc(var(--w) * .35); filter: blur(1.5px); opacity: .75; }
+.hc-far span { position: absolute; border-radius: 50%; background: radial-gradient(circle at 36% 28%, #FFFFFF, #ECE6F8 70%, #D6D2EE); }
+.hc-far span:nth-child(1) { left: 0; bottom: 0; width: 100%; height: 50%; border-radius: 999px; }
+.hc-far span:nth-child(2) { left: 22%; top: 0; width: 33%; height: 95%; }
+.hc-far span:nth-child(3) { left: 52%; top: 25%; width: 26%; height: 72%; }
+.hc-mote {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF;
+  box-shadow: 0 0 12px 4px rgba(255,255,255,.8); opacity: .7; animation: hc-mote 7s ease-in-out infinite;
+}
+
+/* ---------- 밤 배경 ---------- */
+.hc-neb { position: absolute; border-radius: 50%; filter: blur(46px); }
+.hc-stars { position: absolute; inset: 0; }
+.hc-dot { position: absolute; border-radius: 50%; background: #FFFFFF; animation: hc-twinkle 3.4s ease-in-out infinite; }
+.hc-shoot {
+  position: absolute; top: 22%; right: 10%; width: 140px; height: 1.5px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.95));
+  transform: rotate(-24deg); opacity: 0; animation: hc-shoot 7s ease-in infinite;
+}
+.hc-moon-glow {
+  position: absolute; top: -6px; right: -12px; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(246,236,200,.30) 0%, rgba(200,180,255,.10) 50%, rgba(0,0,0,0) 72%);
+}
+.hc-moon {
+  position: absolute; top: 24px; right: 18px; width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 34% 30%, #FFFCEE 0%, #F3E9C6 42%, #CDBF95 78%, #8F8466 100%);
+  box-shadow: 0 0 26px 6px rgba(246,236,200,.35), inset -10px -8px 16px rgba(60,50,40,.35);
+}
+.hc-moon i { position: absolute; border-radius: 50%; background: radial-gradient(circle at 60% 60%, rgba(160,145,105,.55), rgba(200,188,150,.1)); }
+.hc-moon i:nth-child(1) { left: 30px; top: 14px; width: 12px; height: 12px; }
+.hc-moon i:nth-child(2) { left: 14px; top: 34px; width: 9px; height: 9px; }
+.hc-moon i:nth-child(3) { left: 38px; top: 38px; width: 6px; height: 6px; }
+.hc-horizon-glow {
+  position: absolute; left: -60px; right: -60px; bottom: -80px; height: 260px; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(180,140,255,.30) 0%, rgba(80,60,140,0) 70%);
+}
+
+/* ---------- 콘텐츠 ---------- */
+.hc-content {
+  position: relative; z-index: 1;
+  max-width: 560px; min-height: 100dvh; margin: 0 auto;
+  padding: 58px 24px calc(28px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column;
+}
+.hc-head { display: flex; flex-direction: column; gap: 8px; }
+.hc-brand {
+  margin: 0 0 6px; font-family: var(--font-display); font-weight: 700; font-size: 20px;
+  letter-spacing: .01em; line-height: 1.2;
+}
+.hc-brand-ko { margin-left: 6px; font-family: var(--font-body); font-weight: 400; font-size: 14px; letter-spacing: .12em; opacity: .8; }
+html:not([data-sky="night"]) .hc-brand { color: var(--day-ink); text-shadow: 0 2px 14px rgba(255,255,255,.7); }
+html[data-sky="night"] .hc-brand { color: var(--night-ink); text-shadow: 0 0 18px rgba(190,170,255,.45); }
+.hc-date { margin: 0; font-size: 13px; letter-spacing: .08em; min-height: 1.3em; }
+.hc-title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 6vw, 36px); line-height: 1.3; letter-spacing: -.01em; }
+.hc-sub { margin: 0; font-size: 14px; }
+html:not([data-sky="night"]) .hc-date, html:not([data-sky="night"]) .hc-sub { color: var(--day-ink-soft); }
+html:not([data-sky="night"]) .hc-title { text-shadow: 0 2px 18px rgba(255,255,255,.7); }
+html[data-sky="night"] .hc-date, html[data-sky="night"] .hc-sub { color: var(--night-ink-soft); }
+html[data-sky="night"] .hc-title { text-shadow: 0 0 24px rgba(190,170,255,.55); }
+
+.hc-worries { position: relative; flex: 1; min-height: 400px; margin: 24px -8px; }
+
+/* 고민이 없거나 불러오지 못했을 때 (레퍼런스에 없는 상태 — 보조 문구 스타일을 따른다) */
+.hc-notice { margin: 0; padding: 24px 8px; font-size: 14px; line-height: 1.6; }
+html:not([data-sky="night"]) .hc-notice { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-notice { color: var(--night-ink-soft); }
+.hc-retry { margin-left: 6px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; }
+
+/* 낮: 3D 구름 */
+.hc-cloud3d {
+  position: absolute; display: block; width: 230px; height: 104px; border: 0; background: transparent; padding: 0; cursor: pointer;
+  animation: hc-float 9s ease-in-out infinite;
+  filter: drop-shadow(0 22px 24px rgba(96,80,170,.22)) drop-shadow(0 4px 6px rgba(96,80,170,.10));
+}
+.hc-cloud3d .hc-p {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 36% 28%, #FFFFFF 0%, #FBF9FF 34%, #E6E2F7 70%, #C9C8EA 100%);
+  box-shadow: inset -10px -12px 22px rgba(140,130,205,.28), inset 8px 10px 16px rgba(255,255,255,.9);
+}
+.hc-cloud3d .hc-base { left: 0; bottom: 0; width: 230px; height: 54px; border-radius: 999px; }
+.hc-cloud3d .hc-a { left: 24px; top: 22px; width: 82px; height: 82px; }
+.hc-cloud3d .hc-b { left: 90px; top: 0; width: 104px; height: 104px; }
+.hc-cloud3d .hc-c { left: 168px; top: 34px; width: 58px; height: 58px; }
+.hc-cloud3d .hc-t {
+  position: absolute; left: 0; right: 0; bottom: 16px; padding: 0 18px; text-align: center;
+  font: 13.5px/1.3 var(--font-body); color: var(--day-cloud-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 밤: 빛나는 별 */
+.hc-wish {
+  position: absolute; display: flex; align-items: center; gap: 14px; border: 0; background: transparent;
+  padding: 6px; cursor: pointer; text-align: left;
+}
+.hc-orb {
+  position: relative; width: 16px; height: 16px; flex: none; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #FFFFFF 0%, #FFF3C8 45%, #F1C873 100%);
+  box-shadow: 0 0 8px 3px rgba(255,236,180,.95), 0 0 28px 12px rgba(255,214,140,.35), 0 0 60px 24px rgba(180,150,255,.18);
+  animation: hc-pulse 4.2s ease-in-out infinite;
+}
+.hc-orb::before, .hc-orb::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 52px; height: 1.5px;
+  background: linear-gradient(90deg, rgba(255,240,200,0), rgba(255,244,214,.95), rgba(255,240,200,0));
+}
+.hc-orb::before { transform: translate(-50%, -50%); }
+.hc-orb::after { transform: translate(-50%, -50%) rotate(90deg); }
+.hc-lbl {
+  /* 레퍼런스 240px — 좁은 화면에서 오른쪽 슬롯의 라벨이 잘리지 않도록 화면 폭에 맞춰 줄인다 */
+  max-width: min(240px, calc(100vw - 190px)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 8px 14px; border-radius: 999px; font: 14px/1.3 var(--font-body); color: var(--night-label);
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+/* 새로 띄운 고민 등장 */
+.hc-enter { animation: hc-rise 1.4s cubic-bezier(.2,.8,.2,1) both, hc-float 9s ease-in-out 1.4s infinite; }
+.hc-wish.hc-enter { animation: hc-rise 1.4s cubic-bezier(.2,.8,.2,1) both; }
+
+/* ---------- 입력창 ---------- */
+.hc-composer { padding: 16px; border-radius: 26px; display: flex; flex-direction: column; gap: 10px; }
+.hc-composer label { font-size: 13px; }
+.hc-row { display: flex; gap: 8px; }
+.hc-composer input, .hc-composer .hc-trigger {
+  flex: 1; min-width: 0; height: 50px; padding: 0 16px; border-radius: 16px; font: 15px var(--font-body);
+}
+.hc-send { height: 50px; padding: 0 20px; border: 0; border-radius: 16px; font: 15px var(--font-body); cursor: pointer; }
+.hc-send:disabled { cursor: progress; opacity: .7; }
+
+html:not([data-sky="night"]) .hc-glass {
+  background: rgba(255,255,255,.42); border: 1px solid rgba(255,255,255,.75);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 20px 44px rgba(96,80,170,.22), inset 0 1px 0 rgba(255,255,255,.9);
+}
+html:not([data-sky="night"]) .hc-composer label { color: #46437A; }
+html:not([data-sky="night"]) .hc-composer input,
+html:not([data-sky="night"]) .hc-composer .hc-trigger,
+html:not([data-sky="night"]) .hc-composer textarea {
+  border: 1px solid rgba(255,255,255,.9); background: rgba(255,255,255,.7);
+  box-shadow: inset 0 2px 6px rgba(96,80,170,.10); color: #2C2A55;
+}
+html:not([data-sky="night"]) .hc-send {
+  background: var(--day-accent); color: #FFFFFF;
+  box-shadow: 0 10px 22px rgba(90,79,191,.38), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+html[data-sky="night"] .hc-glass {
+  background: rgba(26,30,72,.45); border: 1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12);
+}
+html[data-sky="night"] .hc-composer label { color: #C3CCF0; }
+html[data-sky="night"] .hc-composer input,
+html[data-sky="night"] .hc-composer .hc-trigger,
+html[data-sky="night"] .hc-composer textarea {
+  border: 1px solid rgba(255,255,255,.16); background: rgba(8,12,40,.55);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.3); color: #EEF1FF;
+}
+html[data-sky="night"] .hc-send {
+  background: var(--night-accent); color: #1A1838;
+  box-shadow: 0 0 24px rgba(240,200,110,.45), inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* 입력창 모양의 트리거 — 누르면 큰 작성 시트가 열린다 */
+.hc-trigger {
+  display: flex; align-items: center; text-align: left; cursor: text;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hc-trigger > span { overflow: hidden; text-overflow: ellipsis; }
+.hc-trigger-empty { opacity: .62; }
+
+/* ---------- 큰 작성 시트 ---------- */
+.hc-sheet {
+  position: fixed; inset: auto 0 0 0; margin: 0 auto;
+  width: min(560px, 100%); max-width: none; max-height: 92dvh;
+  padding: 0 12px calc(12px + env(safe-area-inset-bottom)); border: 0; background: transparent; color: inherit;
+  overflow: visible;
+}
+.hc-sheet::backdrop { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+html:not([data-sky="night"]) .hc-sheet::backdrop { background: rgba(38,36,77,.22); }
+html[data-sky="night"] .hc-sheet::backdrop { background: rgba(5,8,30,.55); }
+.hc-sheet-panel { padding: 20px; gap: 12px; animation: hc-sheet-in .38s cubic-bezier(.2,.8,.2,1) both; }
+.hc-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hc-sheet-head label { font-size: 15px; font-family: var(--font-display); font-weight: 700; }
+.hc-sheet-close, .hc-sheet-cancel {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px;
+  border: 0; border-radius: 14px; background: transparent; color: inherit; font: 15px var(--font-body); cursor: pointer;
+}
+.hc-sheet-close { margin: -8px -8px -8px 0; opacity: .7; }
+.hc-sheet-cancel { height: 50px; padding: 0 18px; }
+.hc-sheet-close:hover, .hc-sheet-cancel:hover { background: rgba(255,255,255,.18); }
+.hc-sheet-area {
+  width: 100%; min-height: 200px; max-height: 50dvh; resize: none; padding: 14px 16px;
+  border-radius: 16px; font: 16px/1.65 var(--font-body);
+}
+.hc-sheet-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; line-height: 1.5; }
+.hc-sheet-meta p { margin: 0; }
+.hc-sheet-meta p:last-child { flex: none; font-variant-numeric: tabular-nums; }
+.hc-sheet-over { font-weight: 700; color: #C2456A; }
+.hc-sheet-send { flex: 1; }
+html:not([data-sky="night"]) .hc-sheet-meta { color: #46437A; }
+html[data-sky="night"] .hc-sheet-meta { color: #C3CCF0; }
+html[data-sky="night"] .hc-sheet-over { color: #FFB4C8; }
+/* 시트 안은 뒤가 비치지 않게 — 쓰는 글에 집중할 수 있도록 */
+html:not([data-sky="night"]) .hc-sheet .hc-glass { background: rgba(250,248,255,.94); }
+html[data-sky="night"] .hc-sheet .hc-glass { background: rgba(22,26,64,.96); }
+html:not([data-sky="night"]) .hc-sheet .hc-sheet-area { background: #FFFFFF; }
+html[data-sky="night"] .hc-sheet .hc-sheet-area { background: rgba(8,12,40,.9); }
+@keyframes hc-sheet-in { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@media (min-width: 640px) {
+  .hc-sheet { inset: 0; margin: auto; height: fit-content; padding: 0 12px; }
+}
+
+/* 서비스 안내 진입점 (기존 기능 유지용 — 보조 문구 스타일) */
+.hc-links { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; font-size: 12px; }
+.hc-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; color: inherit; text-decoration: none; }
+.hc-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+html:not([data-sky="night"]) .hc-links { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-links { color: var(--night-ink-soft); }
+
+
+/* ================= 고민 상세 (/thoughts/[id]) ================= */
+.hc-back {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: -14px 0 14px -8px; padding: 0 10px;
+  border-radius: 14px; font-size: 14px; text-decoration: none;
+}
+.hc-back:hover { background: rgba(255,255,255,.18); }
+html:not([data-sky="night"]) .hc-back { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-back { color: var(--night-ink-soft); }
+
+.hc-detail { display: flex; flex-direction: column; }
+.hc-card { position: relative; padding: 24px; border-radius: 26px; }
+.hc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.hc-card-label { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.hc-card-meta { margin: 4px 0 0; font-size: 12.5px; }
+.hc-card-body {
+  margin: 22px 0 0; white-space: pre-wrap; overflow-wrap: anywhere;
+  font: 17px/1.85 var(--font-body);
+}
+html:not([data-sky="night"]) .hc-card-label { color: #46437A; }
+html:not([data-sky="night"]) .hc-card-meta { color: var(--day-ink-soft); }
+html:not([data-sky="night"]) .hc-card-body { color: #2C2A55; }
+html[data-sky="night"] .hc-card-label { color: #C3CCF0; }
+html[data-sky="night"] .hc-card-meta { color: var(--night-ink-soft); }
+html[data-sky="night"] .hc-card-body { color: #EEF1FF; }
+
+.hc-author { margin-top: 22px; padding: 14px 16px; border-radius: 18px; font-size: 13.5px; line-height: 1.6; }
+.hc-author p { margin: 0; }
+.hc-author-title { font-family: var(--font-display); font-weight: 700; margin-bottom: 4px !important; }
+.hc-author-hint { margin-top: 4px !important; font-size: 12px; opacity: .8; }
+html:not([data-sky="night"]) .hc-author { background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.85); color: #46437A; }
+html[data-sky="night"] .hc-author { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #C3CCF0; }
+
+.hc-skel { height: 14px; margin-top: 12px; border-radius: 8px; animation: hc-skel 1.6s ease-in-out infinite; }
+.hc-skel:first-child { margin-top: 0; }
+html:not([data-sky="night"]) .hc-skel { background: rgba(255,255,255,.7); }
+html[data-sky="night"] .hc-skel { background: rgba(255,255,255,.1); }
+
+.hc-menu-wrap { position: relative; margin: -10px -10px 0 0; }
+.hc-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  border: 0; border-radius: 14px; background: transparent; color: inherit; opacity: .75; cursor: pointer;
+}
+.hc-icon-btn:hover { opacity: 1; background: rgba(255,255,255,.18); }
+.hc-menu { position: absolute; right: 0; top: 46px; z-index: 5; min-width: 160px; padding: 6px; border-radius: 16px; }
+html:not([data-sky="night"]) .hc-menu { background: #FFFFFF; box-shadow: 0 18px 40px rgba(96,80,170,.25); }
+html[data-sky="night"] .hc-menu { background: #1A1E48; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+.hc-menu-item {
+  display: flex; align-items: center; width: 100%; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px;
+  background: transparent; font: 15px var(--font-body); text-align: left; cursor: pointer;
+}
+html:not([data-sky="night"]) .hc-menu-item { color: #B4436A; }
+html:not([data-sky="night"]) .hc-menu-item:hover { background: #F5F1FF; }
+html[data-sky="night"] .hc-menu-item { color: #FFB4C8; }
+html[data-sky="night"] .hc-menu-item:hover { background: rgba(255,255,255,.08); }
+
+.hc-prompt { margin: 30px 0 12px; text-align: center; font-size: 15px; }
+html:not([data-sky="night"]) .hc-prompt { color: #46437A; }
+html[data-sky="night"] .hc-prompt { color: #C3CCF0; }
+.hc-react-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 480px) { .hc-react-grid { grid-template-columns: 1fr 1fr; } }
+/* 공감 버튼 — harucloud-sky/icons/preview.html 의 값을 따른다 */
+.hc-react {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 60px; padding: 0 18px;
+  border: 1px solid transparent; border-radius: 999px; font: 700 17px var(--font-body); cursor: pointer;
+  transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+}
+.hc-react:disabled { cursor: not-allowed; }
+.hc-react:disabled:not([aria-pressed="true"]) { opacity: .6; }
+.hc-react-icon { display: inline-flex; flex: none; width: 28px; height: 28px; }
+.hc-react-icon svg { width: 28px; height: 28px; }
+.hc-react-pop { animation: hc-icon-pop 220ms cubic-bezier(.2,.8,.2,1); }
+@keyframes hc-icon-pop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
+
+html:not([data-sky="night"]) .hc-react { border-color: rgba(255,255,255,.9); background: rgba(246,244,252,.92); color: #3B4A63; }
+html:not([data-sky="night"]) .hc-react[aria-pressed="true"] { border-color: #C9C2F0; background: #E9E5FB; color: #463C9E; }
+html:not([data-sky="night"]) .hc-react-icon { color: #3B4A63; }
+
+html[data-sky="night"] .hc-react-grid { --hc-heart: #F6C35B; }
+html[data-sky="night"] .hc-react { border-color: rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: #E6EAFF; }
+html[data-sky="night"] .hc-react[aria-pressed="true"] { border-color: transparent; background: #F3D98B; color: #1A1838; box-shadow: 0 0 22px rgba(240,200,110,.35); }
+html[data-sky="night"] .hc-react-icon { color: #1A1838; }
+.hc-react-msg { min-height: 22px; margin: 12px 0 0; text-align: center; font-size: 13px; }
+html:not([data-sky="night"]) .hc-react-msg { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-react-msg { color: var(--night-ink-soft); }
+
+.hc-foot-note { margin: 26px 0 0; text-align: center; font-size: 12.5px; line-height: 1.6; }
+html:not([data-sky="night"]) .hc-foot-note { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-foot-note { color: var(--night-ink-soft); }
+
+/* 만료·없음·오류 */
+.hc-gone { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 40px; text-align: center; }
+.hc-gone .hc-sub { max-width: 300px; line-height: 1.6; }
+.hc-gone-title { margin: 12px 0 0; font-family: var(--font-display); font-weight: 700; font-size: 22px; }
+.hc-mark { position: relative; width: 230px; height: 104px; display: flex; align-items: center; justify-content: center; }
+.hc-mark-cloud { position: relative; opacity: .9; }
+.hc-mark-orb { width: 22px; height: 22px; }
+.hc-pill {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 14px; padding: 0 22px;
+  border-radius: 999px; font: 15px var(--font-body); text-decoration: none; cursor: pointer;
+}
+html:not([data-sky="night"]) .hc-pill { background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.9); color: var(--day-ink); box-shadow: 0 12px 26px rgba(96,80,170,.18); }
+html[data-sky="night"] .hc-pill { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: var(--night-ink); }
+
+/* 신고 시트 */
+.hc-dialog-panel {
+  display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 26px;
+  animation: hc-sheet-in .38s cubic-bezier(.2,.8,.2,1) both;
+}
+.hc-dialog-title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+.hc-dialog-text { margin: 0; font-size: 14.5px; line-height: 1.7; }
+.hc-dialog-hint { margin: 0; font-size: 13px; line-height: 1.6; }
+html:not([data-sky="night"]) .hc-dialog-hint { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-dialog-hint { color: var(--night-ink-soft); }
+.hc-options { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; }
+.hc-option {
+  display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px; border-radius: 14px;
+  font-size: 15px; cursor: pointer; transition: background .2s ease, border-color .2s ease;
+}
+.hc-option input { width: 16px; height: 16px; margin: 0; }
+html:not([data-sky="night"]) .hc-option { background: rgba(255,255,255,.7); border: 1px solid rgba(90,79,191,.14); }
+html:not([data-sky="night"]) .hc-option:has(input:checked) { background: #EFEAFF; border-color: #BFB2F0; }
+html:not([data-sky="night"]) .hc-option input { accent-color: #5A4FBF; }
+html[data-sky="night"] .hc-option { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); }
+html[data-sky="night"] .hc-option:has(input:checked) { background: rgba(251,235,184,.1); border-color: rgba(240,200,110,.55); }
+html[data-sky="night"] .hc-option input { accent-color: #E9C06C; }
+.hc-danger { flex: 1; height: 50px; padding: 0 20px; border: 0; border-radius: 16px; font: 15px var(--font-body); cursor: pointer; }
+.hc-danger:disabled { opacity: .5; cursor: not-allowed; }
+html:not([data-sky="night"]) .hc-danger { background: linear-gradient(135deg, #B4436A 0%, #C85A86 100%); color: #FFFFFF; box-shadow: 0 10px 22px rgba(180,67,106,.3); }
+html[data-sky="night"] .hc-danger { background: linear-gradient(135deg, #F2A0BC 0%, #E8789A 100%); color: #1A1838; }
+.hc-safety { margin: 0; padding: 12px 14px; border-radius: 14px; font-size: 13.5px; line-height: 1.6; }
+html:not([data-sky="night"]) .hc-safety { background: rgba(252,238,230,.9); color: #3A3566; }
+html[data-sky="night"] .hc-safety { background: rgba(251,235,184,.1); color: #FBEBB8; }
+
+@keyframes hc-skel { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+
+/* ================= 미리보기 팝업 ================= */
+.hc-preview-sky { margin: 0; padding: 18px 12px 12px; border-radius: 20px; text-align: center; overflow: hidden; position: relative; }
+html:not([data-sky="night"]) .hc-preview-sky { background: var(--day-sky); }
+html[data-sky="night"] .hc-preview-sky {
+  background:
+    radial-gradient(1.5px 1.5px at 18% 24%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 72% 18%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.5px 1.5px at 86% 62%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 32% 78%, rgba(255,255,255,.7), transparent),
+    var(--night-sky);
+}
+.hc-preview-sky figcaption { margin-top: 8px; font-size: 12.5px; }
+html:not([data-sky="night"]) .hc-preview-sky figcaption { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-preview-sky figcaption { color: var(--night-ink-soft); }
+.hc-preview-stage { display: flex; justify-content: center; align-items: center; min-height: 116px; }
+.hc-preview-figure { position: relative !important; left: auto; top: auto; animation: hc-float 9s ease-in-out infinite; }
+.hc-wish.hc-preview-figure { animation: none; }
+.hc-preview-figure .hc-lbl { max-width: min(240px, calc(100vw - 150px)); }
+.hc-preview-text {
+  margin: 0; max-height: 150px; overflow-y: auto; padding: 12px 14px; border-radius: 14px;
+  white-space: pre-wrap; overflow-wrap: anywhere; font: 15px/1.75 var(--font-body);
+}
+html:not([data-sky="night"]) .hc-preview-text { background: rgba(255,255,255,.75); color: #2C2A55; }
+html[data-sky="night"] .hc-preview-text { background: rgba(8,12,40,.6); color: #EEF1FF; }
+.hc-preview-info { margin: 0; padding: 12px 14px; border-radius: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.6; }
+.hc-preview-info div { display: flex; gap: 10px; }
+.hc-preview-info dt { flex: none; font-family: var(--font-display); font-weight: 700; }
+.hc-preview-info dd { margin: 0; }
+html:not([data-sky="night"]) .hc-preview-info { background: rgba(220,214,244,.55); color: #3A3566; }
+html[data-sky="night"] .hc-preview-info { background: rgba(255,255,255,.06); color: #D7DDF7; }
+
+/* ================= 띄워 보내기 연출 ================= */
+.hc-release {
+  position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; cursor: pointer; animation: hc-release-fade 4.2s ease both;
+}
+html:not([data-sky="night"]) .hc-release { background: radial-gradient(ellipse at 50% 60%, rgba(255,250,244,.94) 0%, rgba(216,205,244,.93) 60%, rgba(180,198,244,.93) 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--day-ink); }
+html[data-sky="night"] .hc-release { background: radial-gradient(ellipse at 50% 60%, rgba(58,42,98,.95) 0%, rgba(18,26,68,.96) 60%, rgba(7,11,36,.97) 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--night-ink); }
+.hc-release-stage { position: relative; width: 100%; height: 46vh; max-height: 360px; }
+.hc-release-fly {
+  position: absolute; left: 50%; bottom: 0; width: 230px; height: 104px; margin-left: -115px;
+  animation: hc-release-rise 2.2s cubic-bezier(.45,.05,.3,1) .15s both;
+}
+.hc-release-figure { position: relative !important; left: auto; top: auto; animation: none; }
+.hc-wish.hc-release-figure { justify-content: center; }
+.hc-release-figure .hc-lbl { max-width: min(240px, calc(100vw - 120px)); }
+.hc-spark {
+  position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%;
+  opacity: 0; animation: hc-spark 1.6s ease-out both;
+}
+html:not([data-sky="night"]) .hc-spark { background: #FFFFFF; box-shadow: 0 0 10px 4px rgba(255,240,205,.9); }
+html[data-sky="night"] .hc-spark { background: #FFF3C8; box-shadow: 0 0 10px 4px rgba(255,214,140,.9); }
+.hc-release-text { text-align: center; animation: hc-release-text 4.2s ease both; }
+.hc-release-text p { margin: 6px 0 0; font-size: 15px; line-height: 1.6; }
+.hc-release-title { margin: 0 !important; font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 6vw, 30px) !important; }
+.hc-release-sub { font-size: 13.5px !important; opacity: .8; }
+html:not([data-sky="night"]) .hc-release-title { text-shadow: 0 2px 18px rgba(255,255,255,.8); }
+html[data-sky="night"] .hc-release-title { text-shadow: 0 0 24px rgba(190,170,255,.55); }
+
+@keyframes hc-release-fade { 0% { opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hc-release-rise {
+  0% { transform: translateY(40px) scale(.92); opacity: 0; }
+  14% { transform: translateY(0) scale(1); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateY(calc(-46vh - 80px)) scale(.7); opacity: 0; }
+}
+@keyframes hc-spark {
+  0% { opacity: 0; transform: translate(0, 0) scale(.4); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1); }
+}
+@keyframes hc-release-text { 0%, 38% { opacity: 0; transform: translateY(10px); } 50%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-release-fly, .hc-spark { display: none; }
+  .hc-release-text, .hc-release { animation: none !important; opacity: 1; }
+  .hc-preview-figure { animation: none !important; }
+}
+
+
+/* 헤더 고정: 스크롤해도 타이틀·날짜가 위에 머문다. 뒤로 지나가는 구름은 블러 배경으로 가린다 */
+.hc-content:has(> .hc-head) { padding-top: 44px; }
+.hc-head { position: sticky; top: 0; z-index: 4; padding: max(14px, env(safe-area-inset-top)) 0 14px; }
+.hc-head::before {
+  content: ''; position: absolute; z-index: -1; top: -120px; bottom: -22px; left: 50%; width: 100vw; transform: translateX(-50%);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(180deg, #000 82%, transparent); mask-image: linear-gradient(180deg, #000 82%, transparent);
+}
+html:not([data-sky="night"]) .hc-head::before { background: linear-gradient(180deg, rgba(184,196,244,.97) 0%, rgba(206,204,244,.95) 100%); }
+html[data-sky="night"] .hc-head::before { background: linear-gradient(180deg, rgba(7,11,36,.97) 0%, rgba(16,22,62,.95) 100%); }
+
+/* ================= 무한 스크롤 · 하단 고정 ================= */
+.hc-older { margin: 8px 0 0; text-align: center; font-size: 12.5px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+html:not([data-sky="night"]) .hc-older { color: var(--day-ink-soft); }
+html[data-sky="night"] .hc-older { color: var(--night-ink-soft); }
+
+/* 입력창 + 이용 정책: 화면 아래에 붙어 있어 언제든 바로 보인다 */
+.hc-content:has(> .hc-dock) { padding-bottom: 0; }
+.hc-dock {
+  position: sticky; bottom: 0; z-index: 3;
+  margin: 0 -24px; padding: 28px 24px calc(4px + env(safe-area-inset-bottom));
+}
+html:not([data-sky="night"]) .hc-dock { background: linear-gradient(180deg, rgba(244,214,230,0) 0%, rgba(246,224,234,.82) 38%, rgba(250,234,232,.95) 100%); }
+html[data-sky="night"] .hc-dock { background: linear-gradient(180deg, rgba(37,31,85,0) 0%, rgba(30,28,76,.85) 38%, rgba(26,24,66,.96) 100%); }
+.hc-dock .hc-links { margin-top: 2px; }
+
+/* ---------- 애니메이션 ---------- */
+@keyframes hc-float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(8px, -10px); } }
+@keyframes hc-mote { 0%, 100% { transform: translateY(0); opacity: .25; } 50% { transform: translateY(-14px); opacity: .85; } }
+@keyframes hc-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes hc-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.82); } }
+@keyframes hc-shoot {
+  0%, 78% { opacity: 0; transform: translate(0, 0) rotate(-24deg); }
+  82% { opacity: 1; }
+  92%, 100% { opacity: 0; transform: translate(-180px, 80px) rotate(-24deg); }
+}
+@keyframes hc-rise { from { opacity: 0; transform: translateY(80px) scale(.9); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-cloud3d, .hc-mote, .hc-dot, .hc-orb, .hc-shoot, .hc-enter, .hc-sheet-panel, .hc-dialog-panel, .hc-skel, .hc-react-pop { animation: none !important; }
+}

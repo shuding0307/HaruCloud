@@ -1,9 +1,11 @@
 import { CloudShape } from "@/components/sky/CloudShape";
+import { SkyBackground } from "@/components/sky/SkyBackground";
 import { ButtonLink } from "@/components/ui/Button";
 
 export default function NotFound() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+    <main className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center">
+      <SkyBackground />
       <div className="w-40 opacity-80">
         <CloudShape variant={2} />
       </div>

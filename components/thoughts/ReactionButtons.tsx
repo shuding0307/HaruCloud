@@ -6,8 +6,12 @@ import { REACTION_LABELS, REACTION_TYPES, type ReactionType } from "@/types/thou
 import type { CreateReactionResponse } from "@/types/api";
 import { apiFetch, ClientApiError } from "@/lib/client/api";
 import { useToast } from "@/components/ui/Toast";
+import { s } from "@/components/home/classes";
+import { useSkyMode } from "@/components/home/useSkyMode";
+import { ReactionIcon } from "./ReactionIcons";
 
-const ICONS: Record<ReactionType, string> = { been_there: "🤝", lighter: "🎈" };
+/** 누른 뒤 바뀌는 버튼 문구 */
+const SENT_LABELS: Record<ReactionType, string> = { been_there: "나도 그랬어요", lighter: "마음 보냈어요" };
 
 interface Props {
   thoughtId: string;
@@ -20,6 +24,8 @@ export function ReactionButtons({ thoughtId, initial, onGone }: Props) {
   const [sent, setSent] = useState<Set<ReactionType>>(() => new Set(initial));
   const [pending, setPending] = useState<ReactionType | null>(null);
   const [burst, setBurst] = useState<{ type: ReactionType; key: number } | null>(null);
+  // 아이콘이 -sent 버전으로 바뀔 때 한 번 톡 커지는 효과
+  const [pop, setPop] = useState<{ type: ReactionType; key: number } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const inFlight = useRef(false);
   const burstCount = useRef(0);
@@ -36,7 +42,9 @@ export function ReactionButtons({ thoughtId, initial, onGone }: Props) {
       // 서버가 확인한 뒤에만 완료 상태로 바꾼다. (애니메이션과 무관하게 결과는 즉시 확정)
       setSent((prev) => new Set(prev).add(data.type));
       setMessage(data.alreadyReacted ? "이미 마음을 보냈어요." : "따뜻한 마음이 전해졌어요.");
-      if (!data.alreadyReacted) setBurst({ type, key: ++burstCount.current });
+      const key = ++burstCount.current;
+      setPop({ type, key });
+      if (!data.alreadyReacted) setBurst({ type, key });
     } catch (err) {
       if (err instanceof ClientApiError && (err.code === "EXPIRED" || err.code === "NOT_FOUND" || err.code === "UNAVAILABLE")) {
         onGone(err.code === "EXPIRED" ? "EXPIRED" : "NOT_FOUND");
@@ -51,7 +59,7 @@ export function ReactionButtons({ thoughtId, initial, onGone }: Props) {
 
   return (
     <div>
-      <div role="group" aria-label="공감 보내기" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div role="group" aria-label="공감 보내기" className={s.reactGrid}>
         {REACTION_TYPES.map((type) => (
           <ReactionButton
             key={type}
@@ -60,11 +68,12 @@ export function ReactionButtons({ thoughtId, initial, onGone }: Props) {
             loading={pending === type}
             disabled={pending !== null}
             burstKey={burst?.type === type ? burst.key : null}
+            popKey={pop?.type === type ? pop.key : null}
             onClick={() => react(type)}
           />
         ))}
       </div>
-      <p aria-live="polite" className="mt-3 min-h-6 text-center text-sm text-ink-soft">
+      <p aria-live="polite" className={s.reactMsg}>
         {message}
       </p>
     </div>
@@ -77,6 +86,7 @@ function ReactionButton({
   loading,
   disabled,
   burstKey,
+  popKey,
   onClick,
 }: {
   type: ReactionType;
@@ -84,9 +94,11 @@ function ReactionButton({
   loading: boolean;
   disabled: boolean;
   burstKey: number | null;
+  popKey: number | null;
   onClick: () => void;
 }) {
   const reduce = useReducedMotion();
+  const sky = useSkyMode();
   return (
     <motion.button
       type="button"
@@ -95,22 +107,12 @@ function ReactionButton({
       aria-pressed={done}
       aria-busy={loading || undefined}
       whileTap={reduce || done ? undefined : { scale: 0.96 }}
-      className={
-        "relative flex min-h-14 items-center justify-center gap-2 rounded-full px-5 text-[15px] font-semibold " +
-        "transition-colors duration-200 disabled:cursor-not-allowed " +
-        (done
-          ? "bg-lavender text-deep-sky ring-2 ring-[#c9bdea]"
-          : "bg-white text-deep-sky shadow-soft hover:bg-sky disabled:opacity-60")
-      }
+      className={s.react}
     >
-      <span aria-hidden>{ICONS[type]}</span>
-      <span>{REACTION_LABELS[type]}</span>
-      {done && <span className="sr-only">(보냄)</span>}
-      {done && (
-        <span aria-hidden className="text-xs font-medium text-ink-soft">
-          ✓
-        </span>
-      )}
+      <span key={popKey ?? "idle"} className={`${s.reactIcon} ${popKey !== null ? s.reactPop : ""}`}>
+        <ReactionIcon type={type} sky={sky} sent={done} />
+      </span>
+      <span>{done ? SENT_LABELS[type] : REACTION_LABELS[type]}</span>
       <AnimatePresence>{burstKey !== null && <Sparkles key={burstKey} reduce={!!reduce} />}</AnimatePresence>
     </motion.button>
   );

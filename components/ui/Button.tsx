@@ -10,9 +10,10 @@ const base =
   "active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-deep-sky text-white shadow-float hover:bg-[#2b4d68]",
-  secondary: "bg-white/85 text-deep-sky shadow-soft backdrop-blur hover:bg-white",
-  ghost: "bg-transparent text-deep-sky hover:bg-white/50",
+  primary:
+    "bg-deep-sky text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_14px_32px_-14px_rgb(52_81_107/0.7)] hover:bg-[#2b455c]",
+  secondary: "bg-pearl/80 text-deep-sky shadow-glass ring-1 ring-white/70 backdrop-blur-md hover:bg-pearl",
+  ghost: "bg-transparent text-deep-sky hover:bg-pearl/55",
   danger: "bg-danger text-white hover:bg-[#913a4e]",
 };
 

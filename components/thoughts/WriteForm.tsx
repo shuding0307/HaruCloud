@@ -11,6 +11,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
+import { Icon } from "@/components/ui/Icon";
 import { CloudPreview } from "./CloudPreview";
 
 export function WriteForm() {
@@ -144,19 +145,19 @@ export function WriteForm() {
         </p>
       </div>
 
-      <ul className="mt-5 space-y-2 rounded-[var(--radius-md)] bg-white/60 px-5 py-4 text-sm text-ink">
+      <ul className="mt-5 space-y-2 rounded-[var(--radius-md)] bg-pearl/60 px-5 py-4 text-sm text-ink ring-1 ring-white/60 backdrop-blur-md">
         <li className="flex gap-2">
-          <span aria-hidden>☁️</span>
+          <Icon name="cloud" className="mt-0.5 shrink-0 text-deep-sky/70" />
           <span>이름·연락처 없이 <strong className="font-semibold">익명</strong>으로 하늘에 공개돼요.</span>
         </li>
         <li className="flex gap-2">
-          <span aria-hidden>🕐</span>
+          <Icon name="clock" className="mt-0.5 shrink-0 text-deep-sky/70" />
           <span>
             공개 후 <strong className="font-semibold">{THOUGHT_LIFETIME_HOURS}시간</strong>이 지나면 하늘에서 사라져요.
           </span>
         </li>
         <li className="flex gap-2">
-          <span aria-hidden>🔒</span>
+          <Icon name="lock" className="mt-0.5 shrink-0 text-deep-sky/70" />
           <span>이름, 연락처, 학교·회사처럼 나를 알아볼 수 있는 정보는 적지 않는 걸 권해요.</span>
         </li>
       </ul>
