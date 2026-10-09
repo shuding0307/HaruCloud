@@ -1,0 +1,207 @@
+/* HaruCloud — 낮엔 구름, 밤엔 별 (몽환 3D 버전) */
+:root {
+  --font-body: 'Gowun Dodum', sans-serif;
+  --font-display: 'Gowun Batang', serif;
+
+  /* 낮 */
+  --day-sky: linear-gradient(180deg, #B4C6F4 0%, #D8CDF4 38%, #F4D6E6 72%, #FCEEE6 100%);
+  --day-ink: #26244D;
+  --day-ink-soft: #4B4880;
+  --day-cloud-text: #3A3566;
+  --day-accent: linear-gradient(135deg, #5A4FBF 0%, #7A5BC4 100%);
+
+  /* 밤 */
+  --night-sky: linear-gradient(180deg, #070B24 0%, #121A44 48%, #251F55 82%, #3A2A62 100%);
+  --night-ink: #F6F4FF;
+  --night-ink-soft: #AEB8E2;
+  --night-label: #E6EAFF;
+  --night-accent: linear-gradient(135deg, #FBEBB8 0%, #E9C06C 100%);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font-body); }
+
+.sky {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  transition: background 1.2s ease;
+}
+body[data-sky="day"] .sky { background: var(--day-sky); color: var(--day-ink); }
+body[data-sky="night"] .sky { background: var(--night-sky); color: var(--night-ink); }
+
+/* 배경 레이어 전환 */
+.layer { position: absolute; inset: 0; pointer-events: none; transition: opacity 1.2s ease; }
+body[data-sky="day"] .layer-night,
+body[data-sky="night"] .layer-day { opacity: 0; }
+
+/* ---------- 낮 배경 ---------- */
+.sun-bloom {
+  position: absolute; top: -160px; right: -160px; width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,246,222,.95) 0%, rgba(255,236,214,.55) 28%, rgba(255,226,236,0) 70%);
+}
+.sun {
+  position: absolute; top: 22px; right: 22px; width: 54px; height: 54px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, #FFFFFF 0%, #FFF6DC 55%, #FFE3B8 100%);
+  box-shadow: 0 0 30px 12px rgba(255,240,205,.8), 0 0 90px 40px rgba(255,220,230,.45);
+}
+.far { position: absolute; width: var(--w); height: calc(var(--w) * .35); filter: blur(1.5px); opacity: .75; }
+.far span { position: absolute; border-radius: 50%; background: radial-gradient(circle at 36% 28%, #FFFFFF, #ECE6F8 70%, #D6D2EE); }
+.far span:nth-child(1) { left: 0; bottom: 0; width: 100%; height: 50%; border-radius: 999px; }
+.far span:nth-child(2) { left: 22%; top: 0; width: 33%; height: 95%; }
+.far span:nth-child(3) { left: 52%; top: 25%; width: 26%; height: 72%; }
+.mote {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF;
+  box-shadow: 0 0 12px 4px rgba(255,255,255,.8); opacity: .7; animation: mote 7s ease-in-out infinite;
+}
+
+/* ---------- 밤 배경 ---------- */
+.neb { position: absolute; border-radius: 50%; filter: blur(46px); }
+.stars { position: absolute; inset: 0; }
+.dot { position: absolute; border-radius: 50%; background: #FFFFFF; animation: twinkle 3.4s ease-in-out infinite; }
+.shoot {
+  position: absolute; top: 22%; right: 10%; width: 140px; height: 1.5px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.95));
+  transform: rotate(-24deg); opacity: 0; animation: shoot 7s ease-in infinite;
+}
+.moon-glow {
+  position: absolute; top: -6px; right: -12px; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(246,236,200,.30) 0%, rgba(200,180,255,.10) 50%, rgba(0,0,0,0) 72%);
+}
+.moon {
+  position: absolute; top: 24px; right: 18px; width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 34% 30%, #FFFCEE 0%, #F3E9C6 42%, #CDBF95 78%, #8F8466 100%);
+  box-shadow: 0 0 26px 6px rgba(246,236,200,.35), inset -10px -8px 16px rgba(60,50,40,.35);
+}
+.moon i { position: absolute; border-radius: 50%; background: radial-gradient(circle at 60% 60%, rgba(160,145,105,.55), rgba(200,188,150,.1)); }
+.moon i:nth-child(1) { left: 30px; top: 14px; width: 12px; height: 12px; }
+.moon i:nth-child(2) { left: 14px; top: 34px; width: 9px; height: 9px; }
+.moon i:nth-child(3) { left: 38px; top: 38px; width: 6px; height: 6px; }
+.horizon-glow {
+  position: absolute; left: -60px; right: -60px; bottom: -80px; height: 260px; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(180,140,255,.30) 0%, rgba(80,60,140,0) 70%);
+}
+
+/* ---------- 콘텐츠 ---------- */
+.content {
+  position: relative; z-index: 1;
+  max-width: 560px; min-height: 100dvh; margin: 0 auto;
+  padding: 58px 24px calc(28px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column;
+}
+.head { display: flex; flex-direction: column; gap: 8px; }
+.date { margin: 0; font-size: 13px; letter-spacing: .08em; }
+.title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 6vw, 36px); line-height: 1.3; letter-spacing: -.01em; }
+.sub { margin: 0; font-size: 14px; }
+body[data-sky="day"] .date, body[data-sky="day"] .sub { color: var(--day-ink-soft); }
+body[data-sky="day"] .title { text-shadow: 0 2px 18px rgba(255,255,255,.7); }
+body[data-sky="night"] .date, body[data-sky="night"] .sub { color: var(--night-ink-soft); }
+body[data-sky="night"] .title { text-shadow: 0 0 24px rgba(190,170,255,.55); }
+
+.worries { position: relative; flex: 1; min-height: 400px; margin: 24px -8px; }
+
+/* 낮: 3D 구름 */
+.cloud3d {
+  position: absolute; width: 230px; height: 104px; border: 0; background: transparent; padding: 0; cursor: pointer;
+  animation: float 9s ease-in-out infinite;
+  filter: drop-shadow(0 22px 24px rgba(96,80,170,.22)) drop-shadow(0 4px 6px rgba(96,80,170,.10));
+}
+.cloud3d .p {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 36% 28%, #FFFFFF 0%, #FBF9FF 34%, #E6E2F7 70%, #C9C8EA 100%);
+  box-shadow: inset -10px -12px 22px rgba(140,130,205,.28), inset 8px 10px 16px rgba(255,255,255,.9);
+}
+.cloud3d .base { left: 0; bottom: 0; width: 230px; height: 54px; border-radius: 999px; }
+.cloud3d .a { left: 24px; top: 22px; width: 82px; height: 82px; }
+.cloud3d .b { left: 90px; top: 0; width: 104px; height: 104px; }
+.cloud3d .c { left: 168px; top: 34px; width: 58px; height: 58px; }
+.cloud3d .t {
+  position: absolute; left: 0; right: 0; bottom: 16px; padding: 0 18px; text-align: center;
+  font: 13.5px/1.3 var(--font-body); color: var(--day-cloud-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 밤: 빛나는 별 */
+.wish {
+  position: absolute; display: flex; align-items: center; gap: 14px; border: 0; background: transparent;
+  padding: 6px; cursor: pointer; text-align: left;
+}
+.orb {
+  position: relative; width: 16px; height: 16px; flex: none; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #FFFFFF 0%, #FFF3C8 45%, #F1C873 100%);
+  box-shadow: 0 0 8px 3px rgba(255,236,180,.95), 0 0 28px 12px rgba(255,214,140,.35), 0 0 60px 24px rgba(180,150,255,.18);
+  animation: pulse 4.2s ease-in-out infinite;
+}
+.orb::before, .orb::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 52px; height: 1.5px;
+  background: linear-gradient(90deg, rgba(255,240,200,0), rgba(255,244,214,.95), rgba(255,240,200,0));
+}
+.orb::before { transform: translate(-50%, -50%); }
+.orb::after { transform: translate(-50%, -50%) rotate(90deg); }
+.lbl {
+  max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 8px 14px; border-radius: 999px; font: 14px/1.3 var(--font-body); color: var(--night-label);
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+/* 새로 띄운 고민 등장 */
+.enter { animation: rise 1.4s cubic-bezier(.2,.8,.2,1) both, float 9s ease-in-out 1.4s infinite; }
+.wish.enter { animation: rise 1.4s cubic-bezier(.2,.8,.2,1) both; }
+
+/* ---------- 입력창 ---------- */
+.composer { padding: 16px; border-radius: 26px; display: flex; flex-direction: column; gap: 10px; }
+.composer label { font-size: 13px; }
+.composer .row { display: flex; gap: 8px; }
+.composer input {
+  flex: 1; min-width: 0; height: 50px; padding: 0 16px; border-radius: 16px; font: 15px var(--font-body);
+}
+.send { height: 50px; padding: 0 20px; border: 0; border-radius: 16px; font: 15px var(--font-body); cursor: pointer; }
+
+body[data-sky="day"] .glass {
+  background: rgba(255,255,255,.42); border: 1px solid rgba(255,255,255,.75);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 20px 44px rgba(96,80,170,.22), inset 0 1px 0 rgba(255,255,255,.9);
+}
+body[data-sky="day"] .composer label { color: #46437A; }
+body[data-sky="day"] .composer input {
+  border: 1px solid rgba(255,255,255,.9); background: rgba(255,255,255,.7);
+  box-shadow: inset 0 2px 6px rgba(96,80,170,.10); color: #2C2A55;
+}
+body[data-sky="day"] .send {
+  background: var(--day-accent); color: #FFFFFF;
+  box-shadow: 0 10px 22px rgba(90,79,191,.38), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+body[data-sky="night"] .glass {
+  background: rgba(26,30,72,.45); border: 1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12);
+}
+body[data-sky="night"] .composer label { color: #C3CCF0; }
+body[data-sky="night"] .composer input {
+  border: 1px solid rgba(255,255,255,.16); background: rgba(8,12,40,.55);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.3); color: #EEF1FF;
+}
+body[data-sky="night"] .send {
+  background: var(--night-accent); color: #1A1838;
+  box-shadow: 0 0 24px rgba(240,200,110,.45), inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* ---------- 애니메이션 ---------- */
+@keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(8px, -10px); } }
+@keyframes mote { 0%, 100% { transform: translateY(0); opacity: .25; } 50% { transform: translateY(-14px); opacity: .85; } }
+@keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.82); } }
+@keyframes shoot {
+  0%, 78% { opacity: 0; transform: translate(0, 0) rotate(-24deg); }
+  82% { opacity: 1; }
+  92%, 100% { opacity: 0; transform: translate(-180px, 80px) rotate(-24deg); }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(80px) scale(.9); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud3d, .mote, .dot, .orb, .shoot, .enter { animation: none !important; }
+}

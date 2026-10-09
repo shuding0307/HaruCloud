@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- 조금 가벼워지길 · 밤 · 보낸 뒤 (눈웃음 + 반짝임) -->
+  <g transform="translate(9.5 -1.5) scale(.62)">
+    <path d="M12 6 13.94 9.33 17.71 10.15 15.14 13.02 15.53 16.85 12 15.3 8.47 16.85 8.86 13.02 6.29 10.15 10.06 9.33Z" fill="#FFC6D6" stroke-width="2.2"/>
+    <path d="M10.2 12.2q.6-.7 1.2 0M12.6 12.2q.6-.7 1.2 0" stroke-width="1.6"/>
+  </g>
+  <g transform="translate(-3.5 1.5) scale(1.05)">
+    <path d="M12 6 13.94 9.33 17.71 10.15 15.14 13.02 15.53 16.85 12 15.3 8.47 16.85 8.86 13.02 6.29 10.15 10.06 9.33Z" fill="#FFFFFF" stroke-width="1.35"/>
+    <path d="M10.4 12q.55-.65 1.1 0M12.6 12q.55-.65 1.1 0" stroke-width="1.1"/>
+    <ellipse cx="14.2" cy="13.3" rx=".8" ry=".5" fill="#F6A9BF" stroke="none" opacity=".85"/>
+  </g>
+  <path d="M4 2.6Q4 4.2 5.6 4.2Q4 4.2 4 5.8Q4 4.2 2.4 4.2Q4 4.2 4 2.6Z" fill="#E8668C" stroke="none"/>
+</svg>

@@ -7,16 +7,19 @@
   color-scheme: light;
 
   /* 색상 */
-  --color-sky: #ddeffd;
+  --color-sky: #ddeffd; /* pale sky */
+  --color-misty: #b9d5f0; /* misty blue */
   --color-cloud: #ffffff;
-  --color-lavender: #e9e2f7;
-  --color-peach: #fbe6d9;
-  --color-cloud-blue: #a7c9e4;
-  --color-deep-sky: #345b7a;
-  --color-ink: #24425b; /* 본문: Sky 배경 대비 9:1 이상 */
-  --color-ink-soft: #4d6a82; /* 보조 문구: 흰색/Sky 대비 4.5:1 이상 */
-  --color-danger: #a8445a;
-  --color-glow: #fff6d8;
+  --color-pearl: #fafcff; /* pearlescent white */
+  --color-lavender: #dcd6f4;
+  --color-peach: #f5ddd5;
+  --color-cloud-blue: #b9d5f0;
+  --color-deep-sky: #34516b; /* 브랜드·제목 — Sky 대비 7:1 */
+  --color-ink: #2a4258; /* 본문 — 유리 패널 위 9:1 이상 */
+  --color-ink-soft: #4b657e; /* 보조 문구 — Sky/흰색 대비 4.5:1 이상 */
+  --color-danger: #a3435a;
+  --color-glow: #fff3d6;
+  --color-dusk: #e2d9ed; /* 해 질 녘 하늘의 중간 톤 — 첫 페인트 배경 */
 
   /* 간격 */
   --space-1: 4px;
@@ -34,8 +37,10 @@
   --radius-pill: 999px;
 
   /* 그림자: 연하고 넓게 */
-  --shadow-soft: 0 8px 30px -12px rgb(52 91 122 / 0.18);
-  --shadow-float: 0 18px 40px -20px rgb(52 91 122 / 0.28);
+  --shadow-soft: 0 10px 30px -14px rgb(52 81 107 / 0.22);
+  --shadow-float: 0 22px 48px -22px rgb(52 81 107 / 0.38);
+  /* 진주빛 유리 패널: 위쪽 1px 하이라이트 + 넓고 옅은 그림자 */
+  --shadow-glass: inset 0 1px 0 rgb(255 255 255 / 0.85), 0 24px 60px -28px rgb(52 81 107 / 0.35);
 
   /* 애니메이션 */
   --duration-fast: 180ms;
@@ -49,6 +54,8 @@
 
 @theme inline {
   --color-sky: var(--color-sky);
+  --color-misty: var(--color-misty);
+  --color-pearl: var(--color-pearl);
   --color-cloud: var(--color-cloud);
   --color-lavender: var(--color-lavender);
   --color-peach: var(--color-peach);
@@ -62,16 +69,17 @@
   --radius-lg: var(--radius-lg);
   --shadow-soft: var(--shadow-soft);
   --shadow-float: var(--shadow-float);
+  --shadow-glass: var(--shadow-glass);
   --font-sans: var(--font-sans-stack);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
-  background: var(--color-sky);
+  background: var(--color-dusk);
 }
 
 body {
-  background: var(--color-sky);
+  background: var(--color-dusk);
   color: var(--color-ink);
   font-family: var(--font-sans-stack);
   font-size: 16px;
@@ -92,21 +100,13 @@ body {
   background: var(--color-lavender);
 }
 
-/* 배경의 먼 구름 — 아주 느린 수평 이동 */
-@keyframes drift {
-  from { transform: translateX(-6vw); }
-  to { transform: translateX(6vw); }
+/* 생성된 구름 스프라이트가 부드럽게 나타나도록 */
+@keyframes sprite-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-.bg-drift {
-  animation: drift var(--drift-duration, 80s) ease-in-out infinite alternate;
-}
-
-@keyframes sun-breathe {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
-}
-.sun-breathe {
-  animation: sun-breathe 14s ease-in-out infinite;
+.cloud-sprite {
+  animation: sprite-in 600ms ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {

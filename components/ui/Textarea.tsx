@@ -6,8 +6,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
       <textarea
         ref={ref}
         className={
-          "block w-full resize-none rounded-[var(--radius-md)] bg-white/90 px-5 py-4 text-base leading-7 text-ink " +
-          "shadow-soft outline-none ring-1 ring-cloud-blue/40 transition-shadow placeholder:text-ink-soft/70 " +
+          "block w-full resize-none rounded-[var(--radius-md)] bg-pearl/85 px-5 py-4 text-base leading-7 text-ink backdrop-blur-md " +
+          "shadow-soft outline-none ring-1 ring-white/80 shadow-glass transition-shadow placeholder:text-ink-soft/70 " +
           `focus:ring-2 focus:ring-deep-sky/60 ${className}`
         }
         {...props}

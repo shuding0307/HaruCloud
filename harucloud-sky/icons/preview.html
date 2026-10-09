@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공감 버튼 아이콘 미리보기</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: 'Gowun Dodum', sans-serif; }
+  .panel { padding: 32px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .day { background: linear-gradient(180deg, #BFC6F2, #E8D6EA); }
+  .night { background: linear-gradient(180deg, #121A44, #251F55); --hc-heart: #F6C35B; }
+  .row { display: flex; gap: 12px; max-width: 640px; }
+  .btn {
+    flex: 1; height: 60px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 700 17px 'Gowun Dodum', sans-serif; cursor: pointer;
+  }
+  .btn svg { width: 28px; height: 28px; flex: none; }
+  .day .btn { border: 1px solid rgba(255,255,255,.9); background: rgba(246,244,252,.92); color: #3B4A63; }
+  .day .btn[aria-pressed="true"] { border-color: #C9C2F0; background: #E9E5FB; color: #463C9E; }
+  .day .btn svg { color: #3B4A63; }
+  .night .btn { border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: #E6EAFF; }
+  .night .btn[aria-pressed="true"] { border: 0; background: #F3D98B; color: #1A1838; }
+  .night .btn svg { color: #1A1838; }
+</style>
+</head>
+<body>
+  <div class="panel day" id="day"></div>
+  <div class="panel night" id="night"></div>
+<script>
+  // 미리보기 전용: SVG 파일을 불러와 인라인으로 넣습니다 (로컬 서버에서 열어주세요)
+  const sets = {
+    day: { metoo: 'metoo', lighten: 'lighten-day' },
+    night: { metoo: 'metoo', lighten: 'lighten-night' },
+  };
+  async function svg(name) { return (await fetch(name + '.svg')).text(); }
+  async function build(id) {
+    const s = sets[id], el = document.getElementById(id);
+    for (const sent of [false, true]) {
+      const sfx = sent ? '-sent' : '';
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML =
+        `<button class="btn" aria-pressed="${sent}">${await svg(s.metoo + sfx)}${sent ? '나도 그랬어요' : '나도 이런 적 있어'}</button>` +
+        `<button class="btn" aria-pressed="${sent}">${await svg(s.lighten + sfx)}${sent ? '마음 보냈어요' : '조금 가벼워지길'}</button>`;
+      el.appendChild(row);
+    }
+  }
+  build('day'); build('night');
+</script>
+</body>
+</html>

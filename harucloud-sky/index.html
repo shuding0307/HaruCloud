@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HaruCloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-sky="day">
+  <main class="sky">
+    <!-- 낮 배경 -->
+    <div class="layer layer-day" aria-hidden="true">
+      <div class="sun-bloom"></div>
+      <div class="sun"></div>
+      <div class="far" style="left:-40px; top:28%; --w:170px"><span></span><span></span><span></span></div>
+      <div class="far" style="right:-30px; top:52%; --w:160px; opacity:.6"><span></span><span></span><span></span></div>
+      <div class="far" style="left:4%; top:72%; --w:140px; opacity:.55; filter:blur(2.5px)"><span></span><span></span><span></span></div>
+      <span class="mote" style="left:15%; top:30%"></span>
+      <span class="mote" style="left:82%; top:36%; animation-delay:-2s"></span>
+      <span class="mote" style="left:54%; top:62%; animation-delay:-4s"></span>
+      <span class="mote" style="left:30%; top:76%; animation-delay:-5.5s"></span>
+    </div>
+
+    <!-- 밤 배경 -->
+    <div class="layer layer-night" aria-hidden="true">
+      <div class="neb" style="left:-10%; top:26%; width:300px; height:220px; background:rgba(126,92,220,.38)"></div>
+      <div class="neb" style="right:-10%; top:45%; width:280px; height:200px; background:rgba(64,140,210,.26)"></div>
+      <div class="neb" style="left:10%; bottom:0; width:340px; height:200px; background:rgba(220,120,190,.22)"></div>
+      <div class="stars" id="stars"></div>
+      <span class="shoot"></span>
+      <div class="moon-glow"></div>
+      <div class="moon"><i></i><i></i><i></i></div>
+      <div class="horizon-glow"></div>
+    </div>
+
+    <div class="content">
+      <header class="head">
+        <p class="date" id="date"></p>
+        <h1 class="title" id="title">오늘 하늘에 뜬 고민</h1>
+        <p class="sub" id="sub">구름은 하루가 지나면 흩어져요</p>
+      </header>
+
+      <section class="worries" id="worries" aria-label="떠 있는 고민"></section>
+
+      <form class="composer glass" id="composer">
+        <label for="worry" id="composer-label">마음속 고민을 하늘에 띄워보세요</label>
+        <div class="row">
+          <input id="worry" name="worry" type="text" maxlength="40" autocomplete="off" placeholder="어떤 고민을 띄워볼까요?">
+          <button type="submit" class="send">띄우기</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script src="sky.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- 나도 이런 적 있어 · 기본 -->
+  <circle cx="16" cy="14" r="5.2" fill="#FFE1EA" stroke-width="1.4"/>
+  <circle cx="8" cy="14" r="5.2" fill="#E4DEFC" stroke-width="1.4"/>
+  <g fill="currentColor" stroke="none">
+    <circle cx="7.6" cy="13.4" r=".75"/><circle cx="10" cy="13.4" r=".75"/>
+    <circle cx="14.1" cy="13.4" r=".75"/><circle cx="16.5" cy="13.4" r=".75"/>
+  </g>
+  <g fill="#F6A9BF" stroke="none" opacity=".85">
+    <ellipse cx="10.6" cy="15.3" rx=".9" ry=".55"/><ellipse cx="13.5" cy="15.3" rx=".9" ry=".55"/>
+  </g>
+  <path d="M12 7.6c-1.7-1-2.7-2-2.7-3.1a1.35 1.35 0 0 1 2.7-.5 1.35 1.35 0 0 1 2.7.5c0 1.1-1 2.1-2.7 3.1Z" stroke="none" style="fill:var(--hc-heart,#F28AA8)"/>
+</svg>

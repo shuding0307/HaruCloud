@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <!-- 조금 가벼워지길 · 밤 · 두 별 친구 -->
+  <g transform="translate(9.5 -1.5) scale(.62)">
+    <path d="M12 6 13.94 9.33 17.71 10.15 15.14 13.02 15.53 16.85 12 15.3 8.47 16.85 8.86 13.02 6.29 10.15 10.06 9.33Z" fill="#FFD6E0" stroke-width="2.2"/>
+    <g fill="currentColor" stroke="none"><circle cx="10.8" cy="12" r=".9"/><circle cx="13.2" cy="12" r=".9"/></g>
+  </g>
+  <g transform="translate(-3.5 1.5) scale(1.05)">
+    <path d="M12 6 13.94 9.33 17.71 10.15 15.14 13.02 15.53 16.85 12 15.3 8.47 16.85 8.86 13.02 6.29 10.15 10.06 9.33Z" fill="#FFE7A3" stroke-width="1.35"/>
+    <g fill="currentColor" stroke="none"><circle cx="11" cy="11.9" r=".6"/><circle cx="13.2" cy="11.9" r=".6"/></g>
+    <ellipse cx="14.2" cy="13.2" rx=".8" ry=".5" fill="#F6A9BF" stroke="none" opacity=".85"/>
+  </g>
+</svg>
