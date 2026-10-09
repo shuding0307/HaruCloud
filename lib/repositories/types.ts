@@ -7,6 +7,7 @@ import type {
   ThoughtLookup,
 } from "@/types/thought";
 import type { RateLimiter } from "@/lib/security/rate-limit";
+import type { FeedbackCategory } from "@/types/feedback";
 
 export interface ListCursor {
   createdAt: string;
@@ -41,7 +42,13 @@ export interface ThoughtRepository {
   now(): Promise<Date>;
 }
 
+/** 건의·문의·피드백. 공개 조회 기능은 없고, 운영자만 DB 에서 확인한다. */
+export interface FeedbackRepository {
+  create(input: { category: FeedbackCategory; message: string; senderHash: string }): Promise<void>;
+}
+
 export interface DataServices {
   thoughts: ThoughtRepository;
+  feedback: FeedbackRepository;
   rateLimiter: RateLimiter;
 }

@@ -107,6 +107,7 @@ http://localhost:3000 을 엽니다. 개발 환경에서 `DATA_MODE` 가 비어 
 | `GET /api/thoughts/:id` | 200 `{ thought, viewer, serverNow }` | 404 없음/비공개, 410 만료 |
 | `POST /api/thoughts/:id/reactions` `{ type: "been_there" \| "lighter" }` | 201 신규 / 200 `alreadyReacted: true` | 404, 410, 422, 429 |
 | `POST /api/thoughts/:id/reports` `{ reason }` | 201 `received` / 200 `already_reported` | 404, 410, 422, 429 |
+| `POST /api/feedback` `{ category: "suggestion" \| "question" \| "bug" \| "other", message }` | 201 `received` | 403, 415, 422, 429 |
 
 운영자 전용 API 는 공개 라우트에 존재하지 않습니다.
 
@@ -129,6 +130,7 @@ http://localhost:3000 을 엽니다. 개발 환경에서 `DATA_MODE` 가 비어 
 | 신고된 고민 원문 | 3건 이상 신고 시 즉시 비공개(`under_review`), 만료 시 비공개 | 검토 목적에 한해 **만료 후 최대 7일** 보존 후 삭제 |
 | 신고 기록 (사유·시각·신고자 해시) | 비공개 | 30일 후 삭제. 게시물 삭제 시 원문과의 연결 해제(`SET NULL`) |
 | 요청 제한 기록 (해시) | 비공개 | 1일 후 삭제 |
+| 건의·문의·피드백 (`feedback`) | 비공개 (운영자만 DB 에서 확인) | 180일 후 삭제. 연락처는 받지 않음 |
 
 원문은 다른 테이블이나 로그로 복사되지 않습니다.
 

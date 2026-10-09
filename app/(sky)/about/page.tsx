@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { SafetyNotice } from "@/components/thoughts/ReportDialog";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 export const metadata: Metadata = { title: "이용 안내 및 정책" };
 
@@ -63,6 +64,13 @@ export default function AboutPage() {
 
         <Section title="도움이 필요할 때">
           <SafetyNotice />
+        </Section>
+
+        <Section title="건의 · 문의 · 피드백">
+          <p>HaruCloud를 쓰면서 느낀 점이나 바라는 점이 있다면 편하게 남겨주세요.</p>
+          <div className="pt-2">
+            <FeedbackForm />
+          </div>
         </Section>
       </Card>
     </PageShell>

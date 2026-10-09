@@ -10,7 +10,8 @@ import type {
   ThoughtLookup,
 } from "@/types/thought";
 import type { RateLimiter, RateLimitRule } from "@/lib/security/rate-limit";
-import type { ListActiveResult, ListCursor, ThoughtRepository } from "./types";
+import type { FeedbackCategory } from "@/types/feedback";
+import type { FeedbackRepository, ListActiveResult, ListCursor, ThoughtRepository } from "./types";
 
 interface ThoughtRow {
   id: string;
@@ -147,5 +148,18 @@ export class SupabaseRateLimiter implements RateLimiter {
     });
     if (error) throw new RepositoryError("hit_rate_limit", error.code);
     return data === true;
+  }
+}
+
+export class SupabaseFeedbackRepository implements FeedbackRepository {
+  constructor(private db: SupabaseClient) {}
+
+  async create(input: { category: FeedbackCategory; message: string; senderHash: string }) {
+    const { error } = await this.db.rpc("create_feedback", {
+      p_category: input.category,
+      p_message: input.message,
+      p_sender_hash: input.senderHash,
+    });
+    if (error) throw new RepositoryError("create_feedback", error.code);
   }
 }
